@@ -83,11 +83,22 @@ router.post('/',
         res.status(500).send('Server error')
     }
 
-    
-
-
-
-    
 });
+
+
+// @route   POST api/users
+// @desc    Get all users
+// @access  Public
+
+router.get('/', async (req, res)=>{
+  try {
+    const users = await User.find().sort({date:1}).select('-password -avatar')
+    res.json(users)
+  } catch (error) {
+    console.error(err.message)
+    res.status(500).send('Server error')
+  }
+
+})
 
 module.exports = router;
