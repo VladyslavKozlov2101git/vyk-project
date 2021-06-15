@@ -3,9 +3,9 @@ const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const config = require('config');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
-
 const User = require('../../models/User')
 
 // @route   POST api/users/test
@@ -29,7 +29,6 @@ router.post('/',
         if (!errors.isEmpty()){
             return res.status(400).json({errors:errors.array()})
         }
-    console.log(res.body)
 
 
     const {name, email, password} = req.body;
@@ -100,5 +99,82 @@ router.get('/', async (req, res)=>{
   }
 
 })
+
+// @route   Delete api/users/:id
+// @desc    Delete user by id
+// @access  Private
+
+router.delete('/:id', auth, async (req, res)=>{
+  try {
+    const user = await User.findById(req.user.id).select('-password')
+    
+    await user.remove()
+
+    res.json({msg:'User is removed'})
+  
+  } catch (error) {
+    console.error(err.message)
+    res.status(500).send('Server error')
+  }
+
+})
+
+
+// @route   Patch api/users/:id
+// @desc    Update user's info  by id
+// @access  Private
+
+router.put(
+  '/id',
+  [
+    auth,
+    [
+      check('name', 'Name is required') // Field and message
+        .not()
+        .isEmpty(),
+      check('email', 'Please include a valis email') 
+        .isEmail(),
+      check('password', 'Please enter the password with 6 or more characters') 
+        .isLength({"min":6})
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    const {
+      password,
+      name,
+      email
+    } = req.body
+
+    try {
+      const user = await User.findOne(req.user.id)
+
+      
+
+      // if(user){
+      //   //Update
+      //   user = await User.findOneAndUpdate(
+      //       {"name" : name},
+      //       {"email" : email},
+      //       {"password":password}
+      //   )
+
+      //   return res.json(user)
+      // }
+
+      // await user.save()
+
+      res.json(user)
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).send('Server Error')
+    }
+  }
+)
+
 
 module.exports = router;
