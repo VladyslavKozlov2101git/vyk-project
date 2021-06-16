@@ -128,20 +128,11 @@ router.delete('/:id', auth, async (req, res)=>{
 // @access  Private
 
 router.patch(
-  '/:id', auth, async (req, res, next) => {
+  '/:id', auth,  async (req, res, next) => {
 
-    if(req.body.name){
-      await check('name', 'Name is required')
-        .not()
-        .isEmpty()
-    }
-
-    
-      await check('email', 'Please include a valis email')
+    await check('email', 'Please include a valid email')
         .isEmail()       
     
-
-
 
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
