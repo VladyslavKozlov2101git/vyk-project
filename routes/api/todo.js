@@ -160,67 +160,21 @@ router.patch(
         check('priority', 'Can only be one of the enum values')
             .isIn(['low', 'medium', 'hight'])
   ]],  async (req, res) => {
-  
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
-      }
-
-      const{
-        title,
-        description,
-        isImportant,
-        priority,
-        category,
-        doDate,
-        isDone
-
-    } = req.body
-
-
-    const todoFields = {}
-
-    todoFields.user = req.user.id
-
-    if(title) todoFields.title = title
-    if(description) todoFields.description = description
-    if(isImportant) todoFields.isImportant = isImportant
-    if(priority) todoFields.priority = priority
-    if(category) todoFields.category = category
-    if(doDate) todoFields.doDate = doDate
-    if(isDone) todoFields.isDone = isDone
-
-
-
-
-
-
-
-  
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+    
+    
+    
       try {
         let todo = await Todo.findById(req.params.id)
-        
 
-        //Update
+        todo = await Todo.findByIdAndUpdate(req.params.id, req.body)
 
-        if(todo){
-            todo = await User.findOneAndUpdate(
-                {"title": title},
-                {"description": description},
-                {"isImportant": isImportant},
-                {"priority": priority},
-                {"category": category},
-                {"doDate": doDate},
-                {"isDone": isDone}
-            )
+        await todo.save()
 
-            return res.json(todo)
-        }
-  
-        // todo = new Profile(todoFields)
-        // await todo.save()
-        // res.json(todo)
-
+        res.status(200).json({msg:'Todo data is successfully updated'})
   
       } catch (err) {
         console.error(err.message)
