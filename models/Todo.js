@@ -16,7 +16,8 @@ const TodoSchema = new mongoose.Schema({
     }, // дата виконання
     title:{
         type:String,
-        required: true
+        required: true,
+        max: 10
     }, //Заголовок
     description:{
         type:String,
@@ -31,14 +32,14 @@ const TodoSchema = new mongoose.Schema({
         enum:['low', 'medium', 'hight'],
         description: "can only be one of the enum values"
     }, //Пріоритет
-    category:{
-        type:String,
-        enum:['shopping', 'study', 'recreation'],
-        required: true
-    },
     isDone:{
         type:Boolean
-    } // Виконано
+    }, // Виконано
+    category:{
+        type: String,
+        required: true
+
+    }
 
 
 
