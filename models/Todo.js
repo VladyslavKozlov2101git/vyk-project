@@ -16,8 +16,7 @@ const TodoSchema = new mongoose.Schema({
     }, // дата виконання
     title:{
         type:String,
-        required: true,
-        max: 10
+        required: true
     }, //Заголовок
     description:{
         type:String,

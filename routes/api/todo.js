@@ -22,9 +22,10 @@ router.post('/',[auth,[
     check('description', 'Description is required')
         .not()
         .isEmpty(),
-    check('title', 'Title should be less than 10 symbols')
+    check('title', 'Title should be less than 64 symbols')
         .isLength({"max":64}),
-    
+    check('description', 'Description should be less  than 1200 symbols')
+        .isLength({"max":1200}),    
     check('priority', 'Can only be one of the enum values')
         .isIn(['low', 'medium', 'hight'])
     
