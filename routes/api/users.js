@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken');
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User')
-
+const Category = require('../../models/Category')
+const Todo = require('../../models/Todo')
 
 // @route   POST api/users/test
 // @desc    Register user
@@ -108,7 +109,18 @@ router.get('/', async (req, res)=>{
 router.delete('/:id', auth, async (req, res)=>{
   try {
     const user = await User.findById(req.user.id).select('-password')
-    
+
+    const categories = await Category.find({ user : req.user.id })
+    const todos = await Todo.find({ user : req.user.id })    
+
+    await categories.forEach(element => {
+      element.remove()
+    });
+
+    await todos.forEach(element => {
+      element.remove()
+    });
+
     await user.remove()
 
     res.json({msg:'User is removed'})

@@ -1,14 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
-const bcrypt = require('bcryptjs');
-const config = require('config');
-const jwt = require('jsonwebtoken');
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User')
 const Category = require('../../models/Category')
-const Todo = require('../../models/Todo')
 
 // @route   POST api/category
 // @desc    Create new category
@@ -59,7 +54,7 @@ router.post('/',[auth,[
 
 router.get('/', auth, async (req, res)=>{
   try {
-      const categories = await Category.find().sort({title:-1})
+      const categories = await Category.find({ user : req.user.id }).sort({title:-1})
       res.status(200).json({total:categories.length, categories})
       
   } catch (error) {
@@ -95,6 +90,34 @@ router.get('/:id', auth, async (req, res)=>{
 
 
 
+// @route   Delete api/category/:id
+// @desc    Delete category by id
+// @access  Private
+
+
+router.delete('/:id', auth, async (req, res)=>{
+    try {
+        const category = await Category.findById(req.params.id)
+
+        if(!category){
+            return res.status(404).json({msg:'This category isn\'t found'})
+        }
+       
+        
+        
+        await category.remove()
+
+        res.json({msg:'Сategory item is removed'})
+
+        
+    } catch (error) {
+        console.error(error.message)
+        if(err.kind === 'ObjectId'){
+            return res.status(404).json({msg:'Сategory is not found'})
+        }
+        res.status(500).send('Server error')
+    }
+})
 
 
 
