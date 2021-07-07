@@ -31,14 +31,14 @@ const TodoSchema = new mongoose.Schema({
         enum:['low', 'medium', 'hight'],
         description: "can only be one of the enum values"
     }, //Пріоритет
-    category:{
-        type:String,
-        enum:['shopping', 'study', 'recreation'],
-        required: true
-    },
     isDone:{
         type:Boolean
-    } // Виконано
+    }, // Виконано
+    category:{
+        type: String,
+        required: true
+
+    }
 
 
 

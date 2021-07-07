@@ -6,6 +6,7 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth') ///тут знаходиться мыдлвейр, який ми передаэмо ще й у запрос
 const User = require('../../models/User')
 const Todo = require('../../models/Todo')
+const Category = require('../../models/Category')
 const bcrypt = require('bcryptjs');
 
 
@@ -21,8 +22,10 @@ router.post('/',[auth,[
     check('description', 'Description is required')
         .not()
         .isEmpty(),
-    check('category', 'Can only be one of the enum values')
-        .isIn(['shopping', 'study', 'recreation']),
+    check('title', 'Title should be less than 64 symbols')
+        .isLength({"max":64}),
+    check('description', 'Description should be less  than 1200 symbols')
+        .isLength({"max":1200}),    
     check('priority', 'Can only be one of the enum values')
         .isIn(['low', 'medium', 'hight'])
     
@@ -32,6 +35,13 @@ router.post('/',[auth,[
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() })
     }
+
+    const doesCategoryExit = await Category.exists({ _id: req.body.category });
+
+    if(!doesCategoryExit){
+        return res.status(404).json({errors : `Category isn't found`})
+    }
+
 
     try {
         const user = await User.findById(req.user.id).select('-password')
@@ -73,7 +83,7 @@ router.post('/',[auth,[
 
 router.get('/', auth, async (req, res)=>{
     try {
-        const posts = await Todo.find().sort({date:-1})
+        const posts = await Todo.find({ user : req.user.id }).sort({date:-1})
         res.status(200).json({total:posts.length, posts})
         
     } catch (error) {
