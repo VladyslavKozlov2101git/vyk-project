@@ -54,7 +54,7 @@ router.post('/',[auth,[
 
 router.get('/', auth, async (req, res)=>{
   try {
-      const categories = await Category.find({ user : req.user.id }).sort({title:-1})
+      const categories = await Category.find().sort({title:-1})
       res.status(200).json({total:categories.length, categories})
       
   } catch (error) {
