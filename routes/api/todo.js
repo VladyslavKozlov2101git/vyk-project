@@ -84,6 +84,7 @@ router.post('/',[auth,[
 router.get('/', auth, async (req, res)=>{
     try {
         const posts = await Todo.find({ user : req.user.id }).sort({date:-1})
+        
         res.status(200).json({total:posts.length, posts})
         
     } catch (error) {
@@ -101,6 +102,10 @@ router.get('/', auth, async (req, res)=>{
 router.get('/:id', auth, async (req, res)=>{
     try {
         const todo = await Todo.findById(req.params.id)
+
+        if (todo.user != req.user.id){
+            return res.status(404).json({msg:'This todo item isn\'t available for the user'})
+        }
 
         if(!todo){
             return res.status(404).json({msg:'Todo item not found'})

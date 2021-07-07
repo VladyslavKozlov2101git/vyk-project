@@ -4,6 +4,7 @@ const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User')
 const Category = require('../../models/Category')
+const Todo = require('../../models/Todo')
 
 // @route   POST api/category
 // @desc    Create new category
@@ -28,8 +29,9 @@ router.post('/',[auth,[
 
       const newCategory = new Category({
           title: req.body.title,
-          color: req.body.color
-
+          color: req.body.color,
+          user: req.user.id
+        
       })
 
       const category = await newCategory.save()
@@ -54,7 +56,7 @@ router.post('/',[auth,[
 
 router.get('/', auth, async (req, res)=>{
   try {
-      const categories = await Category.find().sort({title:-1})
+      const categories = await Category.find({user:req.user.id}).sort({title:-1})
       res.status(200).json({total:categories.length, categories})
       
   } catch (error) {
@@ -75,6 +77,10 @@ router.get('/:id', auth, async (req, res)=>{
 
       if(!category){
           return res.status(404).json({msg:'This category isn\'t found'})
+      }
+
+      if (category.user != req.user.id){
+        return res.status(404).json({msg:'This category isn\'t available for the user'})
       }
 
       res.json(category)
@@ -102,6 +108,12 @@ router.delete('/:id', auth, async (req, res)=>{
         if(!category){
             return res.status(404).json({msg:'This category isn\'t found'})
         }
+
+        const todos = await Todo.find({ user : req.user.id })    
+
+        await todos.forEach(element => {
+            element.remove()
+        });
        
         
         
