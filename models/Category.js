@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const CategorySchema = new mongoose.Schema({
-    name: {
-        type: Schema.ObjectId,
+    user: {
+        type: Schema.Types.ObjectId,
         ref: 'users'
     },
     color:{
