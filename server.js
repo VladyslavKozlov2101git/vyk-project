@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json())  //это метод, встроенный в express для распознавания входящего объекта запроса как объекта JSON. Этот метод вызывается в качестве промежуточного программного обеспечения в вашем приложении с использованием кода
 
 
-app.get('/', (req, res)=> res.send('API running'))
+app.get('/', (req, res)=> res.send('API running for VYK Project'))
 
 
 //Define Routes
